@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="637a11f5-6520-4dbb-a4f9-ef7dfbef6f21" >
+		<http:listener-connection host="localhost" port="8070" />
+	</http:listener-config>
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="724103be-38b6-483d-b3d4-ee88976723b8" >
+		<vm:queues >
+			<vm:queue queueName="newproject" />
+		</vm:queues>
+	</vm:config>
+	<flow name="vmcFlow" doc:id="fd5acba4-da65-468e-ae2c-e27160b4c698" >
+		<http:listener doc:name="Listener" doc:id="70615b60-6013-4401-8ac8-07463250e7d1" config-ref="HTTP_Listener_config" path="sid"/>
+		<vm:publish queueName="newproject" doc:name="Publish" doc:id="6d5576b6-b329-456c-9c1f-f2a1b431fb00" config-ref="VM_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="33a59d5c-a821-4ad3-9a4a-b6ec02aa93b9" message="#[payload]"/>
+	</flow>
+	<flow name="vmcFlow1" doc:id="a2b2d514-b491-48e0-a7b9-1db7be8380c2" initialState="stopped">
+		<vm:listener queueName="newproject" doc:name="Listener" doc:id="f5323304-9174-4557-a39b-e0cc3a9ff14f" config-ref="VM_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e2983221-6567-4914-a2ec-36008eb3238f" message="#[payload]"/>
+	</flow>
+	<flow name="vmcFlow2" doc:id="391b2642-07ae-420c-9bd8-4eaefe34ed46" >
+		<http:listener doc:name="Listener" doc:id="92772869-c429-4c11-8455-5b6c55249a74" config-ref="HTTP_Listener_config" path="sid1"/>
+		<vm:consume doc:name="Consume" doc:id="a3b19001-2939-4f3c-b0c6-d493f20eddae" config-ref="VM_Config" queueName="newproject"/>
+		<logger level="INFO" doc:name="Logger" doc:id="1eee4ca9-5d16-40ea-8a1f-390e7253a54c" message="#[payload]"/>
+	</flow>
+</mule>
